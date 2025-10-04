@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 名刺OCR解析アプリ
 
-## Getting Started
+Google Cloud Document AI と OpenAI GPT-4 を使用した名刺情報自動抽出アプリケーションです。
 
-First, run the development server:
+## 機能
+
+- 📄 **名刺画像のOCR**: Google Cloud Document AI で高精度なテキスト抽出
+- 🤖 **AI構造化**: OpenAI GPT-4 で名刺情報を構造化データに変換
+- 🎨 **美しいUI**: モダンで使いやすいインターフェース
+- 📱 **レスポンシブ**: モバイル・デスクトップ対応
+- 🔗 **クリック可能**: メール、電話、ウェブサイトへの直接アクセス
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 14, React, TypeScript, Tailwind CSS
+- **バックエンド**: Next.js API Routes
+- **OCR**: Google Cloud Document AI
+- **AI**: OpenAI GPT-4
+- **型安全性**: Zod バリデーション
+
+## セットアップ
+
+### 1. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 2. 環境変数の設定
+
+`.env.local` ファイルを作成し、以下の環境変数を設定してください：
+
+```env
+# Google Cloud Document AI
+GOOGLE_APPLICATION_CREDENTIALS_JSON={"type":"service_account",...}
+DOC_AI_LOCATION=us
+DOC_AI_PROCESSOR_ID=your-processor-id
+
+# OpenAI
+OPENAI_API_KEY=your-openai-api-key
+```
+
+### 3. Google Cloud の設定
+
+1. [Google Cloud Console](https://console.cloud.google.com/) でプロジェクトを作成
+2. Document AI API を有効化
+3. Document AI プロセッサを作成
+4. サービスアカウントキーを作成して JSON を環境変数に設定
+
+### 4. 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000) でアプリケーションにアクセスできます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## プロジェクト構成
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── api/ocr/route.ts    # OCR API エンドポイント
+│   ├── page.tsx            # メインページ
+│   └── layout.tsx          # レイアウト
+├── components/
+│   ├── FileUpload.tsx      # ファイルアップロード
+│   ├── OCRResult.tsx       # 結果表示
+│   └── ErrorDisplay.tsx    # エラー表示
+└── lib/
+    └── schema.ts           # Zod スキーマ定義
+```
 
-## Learn More
+## 使用方法
 
-To learn more about Next.js, take a look at the following resources:
+1. 名刺の画像をアップロード
+2. 「名刺を解析」ボタンをクリック
+3. 抽出された情報を確認
+4. メールや電話番号をクリックして直接連絡
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 対応画像形式
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- PNG
+- JPEG/JPG
+- PDF
 
-## Deploy on Vercel
+## ライセンス
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License
