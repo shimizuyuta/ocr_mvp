@@ -44,6 +44,12 @@ export default function OCRResult({ result }: OCRResultProps) {
                   <span className="text-gray-900">{result.structured.department}</span>
                 </div>
               )}
+              {result.structured.address && (
+                <div className="flex items-start">
+                  <span className="font-medium text-gray-600 w-20">住所:</span>
+                  <span className="text-gray-900">{result.structured.address}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -94,14 +100,6 @@ export default function OCRResult({ result }: OCRResultProps) {
             </div>
           </div>
         </div>
-
-        {/* 住所 */}
-        {result.structured.address && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">住所</h4>
-            <p className="text-gray-700">{result.structured.address}</p>
-          </div>
-        )}
 
         {/* 生テキスト */}
         <details className="mt-6">

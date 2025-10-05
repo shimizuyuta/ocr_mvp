@@ -43,6 +43,7 @@ DOC_AI_PROCESSOR_ID=your-processor-id
 
 # OpenAI
 OPENAI_API_KEY=your-openai-api-key
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 ### 3. Google Cloud の設定
