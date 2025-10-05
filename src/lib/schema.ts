@@ -12,21 +12,11 @@ export const BusinessCardSchema = z.object({
   fax: z.string().nullable().optional(),
   zip: z.string().nullable().optional(),
   address: z.string().nullable().optional(),
-  website: z.string().nullable().optional().refine(val => !val || val === '' || z.string().url().safeParse(val).success, {
-    message: "Invalid URL format"
-  }),
-  linkedin: z.string().nullable().optional().refine(val => !val || val === '' || z.string().url().safeParse(val).success, {
-    message: "Invalid URL format"
-  }),
-  twitter: z.string().nullable().optional().refine(val => !val || val === '' || z.string().url().safeParse(val).success, {
-    message: "Invalid URL format"
-  }),
-  instagram: z.string().nullable().optional().refine(val => !val || val === '' || z.string().url().safeParse(val).success, {
-    message: "Invalid URL format"
-  }),
-  qr_code_url: z.string().nullable().optional().refine(val => !val || val === '' || z.string().url().safeParse(val).success, {
-    message: "Invalid URL format"
-  }), // 名刺のQRコードなど
+  website: z.string().nullable().optional(),
+  linkedin: z.string().nullable().optional(),
+  twitter: z.string().nullable().optional(),
+  instagram: z.string().nullable().optional(),
+  qr_code_url: z.string().nullable().optional(), // 名刺のQRコードなど
   notes: z.string().nullable().optional()              // その他メモ欄
 });
 
