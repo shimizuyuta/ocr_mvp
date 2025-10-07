@@ -73,6 +73,12 @@ export default function HomePage() {
             ) : (
               <OCRResult result={result} />
             ))}
+          {result &&
+            ("error" in result ? (
+              <ErrorDisplay error={result} />
+            ) : (
+              <OCRResult result={result} />
+            ))}
         </div>
       </div>
     </div>
