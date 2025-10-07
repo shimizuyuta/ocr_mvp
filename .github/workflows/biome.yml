@@ -1,0 +1,68 @@
+name: Biome Lint and Auto-Format
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    name: Lint with Biome
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: stable
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Biome check
+        run: npm run lint
+
+  format:
+    name: Auto-format with Biome and commit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: stable
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Biome format (write)
+        run: npm run format
+
+      - name: Commit changes if any
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(format): apply biome formatting"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+
+
