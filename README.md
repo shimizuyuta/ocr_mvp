@@ -3,6 +3,7 @@
 Google Cloud Document AI と OpenAI GPT-4 を使用した名刺情報自動抽出アプリケーションです。
 
 
+
 ## イメージ
 <img width="1382" height="944" alt="image" src="https://github.com/user-attachments/assets/455e8a3e-3f66-438f-b082-6cb55fad6714" />
 
