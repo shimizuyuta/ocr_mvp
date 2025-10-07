@@ -1,4 +1,4 @@
-import type { auth } from "googleapis";
+import type { Auth } from "googleapis";
 import { type NextRequest, NextResponse } from "next/server";
 import type { BusinessCardData } from "@/lib/schema";
 
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function appendToSpreadsheet(
-  credentials: auth.JWTInput,
+  credentials: Auth.JWTInput,
   spreadsheetId: string,
   businessCard: BusinessCardData,
 ): Promise<void> {
