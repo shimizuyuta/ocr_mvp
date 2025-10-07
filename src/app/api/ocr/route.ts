@@ -2,12 +2,29 @@ import { type NextRequest, NextResponse } from "next/server";
 import { DocumentAIService } from "@/lib/document-ai-service";
 import { fileToBase64, getMimeType } from "@/lib/file-utils";
 import { LLMService } from "@/lib/llm-service";
+import { getRandomMockData } from "@/lib/mock-data";
 import type { OCRErrorResponse, OCRResponse } from "@/lib/schema";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
+    // モックモードのチェック
+    // ローカル開発環境では自動的にモックを使用
+    const isLocalDev = process.env.NODE_ENV === "development";
+    const isMockEnabled = process.env.OCR_MOCK_MODE === "true";
+    const isMockDisabled = process.env.OCR_MOCK_MODE === "false";
+
+    // ローカル開発環境でモックが明示的に無効化されていない場合はモックを使用
+    const shouldUseMock = (isLocalDev && !isMockDisabled) || isMockEnabled;
+
+    if (shouldUseMock) {
+      console.log("🔧 Mock mode enabled - returning mock data");
+      // モックデータを返す
+      const mockData = getRandomMockData();
+      return NextResponse.json<OCRResponse>(mockData);
+    }
+
     // ファイル取得
     const formData = await req.formData();
     const file = formData.get("file") as File;
