@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { OCRResponse, OCRErrorResponse } from "@/lib/schema";
+import ErrorDisplay from "@/components/ErrorDisplay";
 import FileUpload from "@/components/FileUpload";
 import OCRResult from "@/components/OCRResult";
-import ErrorDisplay from "@/components/ErrorDisplay";
+import type { OCRErrorResponse, OCRResponse } from "@/lib/schema";
 
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);

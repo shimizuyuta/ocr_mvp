@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 const USER = process.env.BASIC_AUTH_USER || "";
 const PASS = process.env.BASIC_AUTH_PASS || "";

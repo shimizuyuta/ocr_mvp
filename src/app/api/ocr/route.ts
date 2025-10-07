@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
-import type { OCRResponse, OCRErrorResponse } from "@/lib/schema";
-import { getMimeType, fileToBase64 } from "@/lib/file-utils";
 import { DocumentAIService } from "@/lib/document-ai-service";
+import { fileToBase64, getMimeType } from "@/lib/file-utils";
 import { LLMService } from "@/lib/llm-service";
+import type { OCRErrorResponse, OCRResponse } from "@/lib/schema";
 
 export const runtime = "nodejs";
 

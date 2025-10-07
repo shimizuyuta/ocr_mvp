@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
 import type { auth } from "googleapis";
+import { type NextRequest, NextResponse } from "next/server";
 import type { BusinessCardData } from "@/lib/schema";
 
 export const runtime = "nodejs";
