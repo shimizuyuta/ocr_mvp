@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
-import { BusinessCardSchema, BusinessCardData } from '@/lib/schema';
+import OpenAI from "openai";
+import { type BusinessCardData, BusinessCardSchema } from "@/lib/schema";
 
 export class LLMService {
   private openai: OpenAI;
@@ -48,26 +48,30 @@ ${text}
     const prompt = this.createPrompt(text);
 
     const response = await this.openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
       temperature: 0,
     });
 
-    const content = response.choices[0].message?.content ?? '{}';
-    
+    const content = response.choices[0].message?.content ?? "{}";
+
     try {
       const parsedJSON = JSON.parse(content);
       const validated = BusinessCardSchema.safeParse(parsedJSON);
-      
+
       if (!validated.success) {
-        throw new Error(`Validation failed: ${JSON.stringify(validated.error.format())}`);
+        throw new Error(
+          `Validation failed: ${JSON.stringify(validated.error.format())}`,
+        );
       }
-      
+
       return validated.data;
     } catch (error) {
-      console.error('LLM parsing error:', error);
-      console.error('Raw content:', content);
-      throw new Error(`Failed to parse business card: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("LLM parsing error:", error);
+      console.error("Raw content:", content);
+      throw new Error(
+        `Failed to parse business card: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 }

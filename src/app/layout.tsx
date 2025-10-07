@@ -13,10 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: '名刺スキャンMVP',
-  description: '名刺をOCRしてスプレッドシートに登録するMVP',
+  title: "名刺スキャンMVP",
+  description: "名刺をOCRしてスプレッドシートに登録するMVP",
 };
-
 
 export default function RootLayout({
   children,
