@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { OCRResponse } from "@/lib/schema";
+import type { BusinessCardData, OCRResponse } from "@/lib/schema";
 
 interface OCRResultProps {
   result: OCRResponse;
@@ -10,6 +10,7 @@ interface OCRResultProps {
 export default function OCRResult({ result }: OCRResultProps) {
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [formData, setFormData] = useState<BusinessCardData>(result.structured);
 
   const handleSaveToSheets = async () => {
     setSaving(true);
@@ -22,7 +23,7 @@ export default function OCRResult({ result }: OCRResultProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          businessCard: result.structured,
+          businessCard: formData,
         }),
       });
 
@@ -43,6 +44,13 @@ export default function OCRResult({ result }: OCRResultProps) {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleChange = (field: keyof BusinessCardData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value || null,
+    }));
   };
 
   return (
@@ -120,7 +128,7 @@ export default function OCRResult({ result }: OCRResultProps) {
         </div>
       </div>
 
-      <div className="p-6">
+      <form className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 基本情報 */}
           <div className="space-y-4">
@@ -128,40 +136,103 @@ export default function OCRResult({ result }: OCRResultProps) {
               基本情報
             </h4>
             <div className="space-y-3">
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-20">名前:</span>
-                <span className="text-gray-900">{result.structured.name}</span>
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  名前 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={formData.name || ""}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  required
+                />
               </div>
-              <div className="flex items-start">
-                <span className="font-medium text-gray-600 w-20">会社:</span>
-                <span className="text-gray-900">
-                  {result.structured.company}
-                </span>
+
+              <div>
+                <label
+                  htmlFor="name_kana"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  名前（カナ）
+                </label>
+                <input
+                  id="name_kana"
+                  type="text"
+                  value={formData.name_kana || ""}
+                  onChange={(e) => handleChange("name_kana", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
               </div>
-              {result.structured.title && (
-                <div className="flex items-start">
-                  <span className="font-medium text-gray-600 w-20">役職:</span>
-                  <span className="text-gray-900">
-                    {result.structured.title}
-                  </span>
-                </div>
-              )}
-              {result.structured.department && (
-                <div className="flex items-start">
-                  <span className="font-medium text-gray-600 w-20">部署:</span>
-                  <span className="text-gray-900">
-                    {result.structured.department}
-                  </span>
-                </div>
-              )}
-              {result.structured.address && (
-                <div className="flex items-start">
-                  <span className="font-medium text-gray-600 w-20">住所:</span>
-                  <span className="text-gray-900">
-                    {result.structured.address}
-                  </span>
-                </div>
-              )}
+
+              <div>
+                <label
+                  htmlFor="company"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  会社 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="company"
+                  type="text"
+                  value={formData.company || ""}
+                  onChange={(e) => handleChange("company", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  役職
+                </label>
+                <input
+                  id="title"
+                  type="text"
+                  value={formData.title || ""}
+                  onChange={(e) => handleChange("title", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="department"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  部署
+                </label>
+                <input
+                  id="department"
+                  type="text"
+                  value={formData.department || ""}
+                  onChange={(e) => handleChange("department", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  住所
+                </label>
+                <textarea
+                  id="address"
+                  value={formData.address || ""}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
             </div>
           </div>
 
@@ -171,104 +242,181 @@ export default function OCRResult({ result }: OCRResultProps) {
               連絡先
             </h4>
             <div className="space-y-3">
-              {result.structured.email && (
-                <div className="flex items-center">
-                  <svg
-                    className="w-4 h-4 text-gray-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <title>メール</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <a
-                    href={`mailto:${result.structured.email}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {result.structured.email}
-                  </a>
-                </div>
-              )}
-              {result.structured.phone && (
-                <div className="flex items-center">
-                  <svg
-                    className="w-4 h-4 text-gray-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <title>電話</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                  <a
-                    href={`tel:${result.structured.phone}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {result.structured.phone}
-                  </a>
-                </div>
-              )}
-              {result.structured.mobile && (
-                <div className="flex items-center">
-                  <svg
-                    className="w-4 h-4 text-gray-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <title>携帯</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <a
-                    href={`tel:${result.structured.mobile}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {result.structured.mobile}
-                  </a>
-                </div>
-              )}
-              {result.structured.website && (
-                <div className="flex items-center">
-                  <svg
-                    className="w-4 h-4 text-gray-500 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <title>ウェブサイト</title>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
-                    />
-                  </svg>
-                  <a
-                    href={result.structured.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {result.structured.website}
-                  </a>
-                </div>
-              )}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  メールアドレス
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.email || ""}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  電話番号
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone || ""}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="mobile"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  携帯電話
+                </label>
+                <input
+                  id="mobile"
+                  type="tel"
+                  value={formData.mobile || ""}
+                  onChange={(e) => handleChange("mobile", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="fax"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  FAX
+                </label>
+                <input
+                  id="fax"
+                  type="tel"
+                  value={formData.fax || ""}
+                  onChange={(e) => handleChange("fax", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="zip"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  郵便番号
+                </label>
+                <input
+                  id="zip"
+                  type="text"
+                  value={formData.zip || ""}
+                  onChange={(e) => handleChange("zip", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="website"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  ウェブサイト
+                </label>
+                <input
+                  id="website"
+                  type="url"
+                  value={formData.website || ""}
+                  onChange={(e) => handleChange("website", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="linkedin"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  LinkedIn
+                </label>
+                <input
+                  id="linkedin"
+                  type="url"
+                  value={formData.linkedin || ""}
+                  onChange={(e) => handleChange("linkedin", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="twitter"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Twitter
+                </label>
+                <input
+                  id="twitter"
+                  type="text"
+                  value={formData.twitter || ""}
+                  onChange={(e) => handleChange("twitter", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="instagram"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Instagram
+                </label>
+                <input
+                  id="instagram"
+                  type="text"
+                  value={formData.instagram || ""}
+                  onChange={(e) => handleChange("instagram", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="qr_code_url"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  QRコードURL
+                </label>
+                <input
+                  id="qr_code_url"
+                  type="url"
+                  value={formData.qr_code_url || ""}
+                  onChange={(e) => handleChange("qr_code_url", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="notes"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  メモ
+                </label>
+                <textarea
+                  id="notes"
+                  value={formData.notes || ""}
+                  onChange={(e) => handleChange("notes", e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -313,7 +461,7 @@ export default function OCRResult({ result }: OCRResultProps) {
             </pre>
           </div>
         </details>
-      </div>
+      </form>
     </div>
   );
 }
