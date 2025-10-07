@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const BusinessCardSchema = z.object({
   name: z.string().min(1),
@@ -7,8 +7,8 @@ export const BusinessCardSchema = z.object({
   department: z.string().nullable().optional(),
   title: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
-  phone: z.string().nullable().optional(),          // 会社電話
-  mobile: z.string().nullable().optional(),         // 携帯
+  phone: z.string().nullable().optional(), // 会社電話
+  mobile: z.string().nullable().optional(), // 携帯
   fax: z.string().nullable().optional(),
   zip: z.string().nullable().optional(),
   address: z.string().nullable().optional(),
@@ -17,7 +17,7 @@ export const BusinessCardSchema = z.object({
   twitter: z.string().nullable().optional(),
   instagram: z.string().nullable().optional(),
   qr_code_url: z.string().nullable().optional(), // 名刺のQRコードなど
-  notes: z.string().nullable().optional()              // その他メモ欄
+  notes: z.string().nullable().optional(), // その他メモ欄
 });
 
 export type BusinessCardData = z.infer<typeof BusinessCardSchema>;
@@ -30,5 +30,5 @@ export interface OCRResponse {
 
 export interface OCRErrorResponse {
   error: string;
-  details?: any;
+  details?: unknown;
 }

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { OCRResponse } from '@/lib/schema';
+import { useState } from "react";
+import type { OCRResponse } from "@/lib/schema";
 
 interface OCRResultProps {
   result: OCRResponse;
@@ -16,10 +16,10 @@ export default function OCRResult({ result }: OCRResultProps) {
     setSaveMessage(null);
 
     try {
-      const response = await fetch('/api/save-to-sheets', {
-        method: 'POST',
+      const response = await fetch("/api/save-to-sheets", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           businessCard: result.structured,
@@ -29,17 +29,17 @@ export default function OCRResult({ result }: OCRResultProps) {
       const data = await response.json();
 
       if (data.success) {
-        setSaveMessage('✅ スプレッドシートに保存しました！');
+        setSaveMessage("✅ スプレッドシートに保存しました！");
         if (data.spreadsheetUrl) {
           // 新しいタブでスプレッドシートを開く
-          window.open(data.spreadsheetUrl, '_blank');
+          window.open(data.spreadsheetUrl, "_blank");
         }
       } else {
         setSaveMessage(`❌ 保存に失敗しました: ${data.message}`);
       }
     } catch (error) {
-      console.error('Save to sheets error:', error);
-      setSaveMessage('❌ 保存中にエラーが発生しました');
+      console.error("Save to sheets error:", error);
+      setSaveMessage("❌ 保存中にエラーが発生しました");
     } finally {
       setSaving(false);
     }
@@ -50,28 +50,68 @@ export default function OCRResult({ result }: OCRResultProps) {
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
         <div className="flex items-center justify-between">
           <h3 className="text-2xl font-bold flex items-center">
-            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-6 h-6 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <title>解析完了</title>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             解析完了
           </h3>
           <button
+            type="button"
             onClick={handleSaveToSheets}
             disabled={saving}
             className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center"
           >
             {saving ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <title>保存中</title>
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 保存中...
               </>
             ) : (
               <>
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <title>スプレッドシートに保存</title>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 スプシに保存
               </>
@@ -79,12 +119,14 @@ export default function OCRResult({ result }: OCRResultProps) {
           </button>
         </div>
       </div>
-      
+
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 基本情報 */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">基本情報</h4>
+            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              基本情報
+            </h4>
             <div className="space-y-3">
               <div className="flex items-start">
                 <span className="font-medium text-gray-600 w-20">名前:</span>
@@ -92,24 +134,32 @@ export default function OCRResult({ result }: OCRResultProps) {
               </div>
               <div className="flex items-start">
                 <span className="font-medium text-gray-600 w-20">会社:</span>
-                <span className="text-gray-900">{result.structured.company}</span>
+                <span className="text-gray-900">
+                  {result.structured.company}
+                </span>
               </div>
               {result.structured.title && (
                 <div className="flex items-start">
                   <span className="font-medium text-gray-600 w-20">役職:</span>
-                  <span className="text-gray-900">{result.structured.title}</span>
+                  <span className="text-gray-900">
+                    {result.structured.title}
+                  </span>
                 </div>
               )}
               {result.structured.department && (
                 <div className="flex items-start">
                   <span className="font-medium text-gray-600 w-20">部署:</span>
-                  <span className="text-gray-900">{result.structured.department}</span>
+                  <span className="text-gray-900">
+                    {result.structured.department}
+                  </span>
                 </div>
               )}
               {result.structured.address && (
                 <div className="flex items-start">
                   <span className="font-medium text-gray-600 w-20">住所:</span>
-                  <span className="text-gray-900">{result.structured.address}</span>
+                  <span className="text-gray-900">
+                    {result.structured.address}
+                  </span>
                 </div>
               )}
             </div>
@@ -117,44 +167,104 @@ export default function OCRResult({ result }: OCRResultProps) {
 
           {/* 連絡先情報 */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">連絡先</h4>
+            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              連絡先
+            </h4>
             <div className="space-y-3">
               {result.structured.email && (
                 <div className="flex items-center">
-                  <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="w-4 h-4 text-gray-500 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <title>メール</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
-                  <a href={`mailto:${result.structured.email}`} className="text-blue-600 hover:underline">
+                  <a
+                    href={`mailto:${result.structured.email}`}
+                    className="text-blue-600 hover:underline"
+                  >
                     {result.structured.email}
                   </a>
                 </div>
               )}
               {result.structured.phone && (
                 <div className="flex items-center">
-                  <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <svg
+                    className="w-4 h-4 text-gray-500 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <title>電話</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
                   </svg>
-                  <a href={`tel:${result.structured.phone}`} className="text-blue-600 hover:underline">
+                  <a
+                    href={`tel:${result.structured.phone}`}
+                    className="text-blue-600 hover:underline"
+                  >
                     {result.structured.phone}
                   </a>
                 </div>
               )}
               {result.structured.mobile && (
                 <div className="flex items-center">
-                  <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  <svg
+                    className="w-4 h-4 text-gray-500 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <title>携帯</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
                   </svg>
-                  <a href={`tel:${result.structured.mobile}`} className="text-blue-600 hover:underline">
+                  <a
+                    href={`tel:${result.structured.mobile}`}
+                    className="text-blue-600 hover:underline"
+                  >
                     {result.structured.mobile}
                   </a>
                 </div>
               )}
               {result.structured.website && (
                 <div className="flex items-center">
-                  <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                  <svg
+                    className="w-4 h-4 text-gray-500 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <title>ウェブサイト</title>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
+                    />
                   </svg>
-                  <a href={result.structured.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  <a
+                    href={result.structured.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
                     {result.structured.website}
                   </a>
                 </div>
@@ -165,11 +275,13 @@ export default function OCRResult({ result }: OCRResultProps) {
 
         {/* 保存メッセージ */}
         {saveMessage && (
-          <div className={`mt-4 p-3 rounded-lg ${
-            saveMessage.includes('✅') 
-              ? 'bg-green-50 border border-green-200 text-green-800' 
-              : 'bg-red-50 border border-red-200 text-red-800'
-          }`}>
+          <div
+            className={`mt-4 p-3 rounded-lg ${
+              saveMessage.includes("✅")
+                ? "bg-green-50 border border-green-200 text-green-800"
+                : "bg-red-50 border border-red-200 text-red-800"
+            }`}
+          >
             <div className="flex items-center">
               <span className="font-medium">{saveMessage}</span>
             </div>
@@ -179,8 +291,19 @@ export default function OCRResult({ result }: OCRResultProps) {
         {/* 生テキスト */}
         <details className="mt-6">
           <summary className="cursor-pointer text-gray-600 font-medium hover:text-gray-800 transition-colors">
-            <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg
+              className="w-4 h-4 inline mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <title>テキストを表示</title>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
             抽出されたテキストを表示
           </summary>
