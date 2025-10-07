@@ -33,9 +33,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,css,md}": [
-      "biome lint --write",
-      "biome format --write",
-      "git add"
+      "biome check --write --unsafe"
     ]
   }
 }
