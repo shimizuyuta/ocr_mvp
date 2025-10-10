@@ -1,0 +1,139 @@
+# TagPR Configuration
+# https://github.com/tagpr/tagpr
+
+# タグの設定
+tags:
+  # 新機能
+  - name: "feature"
+    description: "新機能の追加"
+    color: "0e8a16" # 緑色
+    patterns:
+      - "feat:"
+      - "feature:"
+      - "新機能"
+      - "機能追加"
+      - "add:"
+      - "✨"
+
+  # バグ修正
+  - name: "bug"
+    description: "バグ修正"
+    color: "d73a4a" # 赤色
+    patterns:
+      - "fix:"
+      - "bug:"
+      - "バグ修正"
+      - "修正"
+      - "🐛"
+
+  # ドキュメント
+  - name: "documentation"
+    description: "ドキュメントの更新"
+    color: "0075ca" # 青色
+    patterns:
+      - "docs:"
+      - "doc:"
+      - "ドキュメント"
+      - "README"
+      - "📚"
+
+  # スタイル・フォーマット
+  - name: "style"
+    description: "コードスタイルの変更"
+    color: "f9d0c4" # 薄いオレンジ色
+    patterns:
+      - "style:"
+      - "format:"
+      - "フォーマット"
+      - "スタイル"
+      - "💄"
+
+  # リファクタリング
+  - name: "refactor"
+    description: "リファクタリング"
+    color: "7057ff" # 紫色
+    patterns:
+      - "refactor:"
+      - "リファクタ"
+      - "リファクタリング"
+      - "♻️"
+
+  # パフォーマンス
+  - name: "performance"
+    description: "パフォーマンスの改善"
+    color: "ffa500" # オレンジ色
+    patterns:
+      - "perf:"
+      - "performance:"
+      - "パフォーマンス"
+      - "性能改善"
+      - "⚡"
+
+  # テスト
+  - name: "test"
+    description: "テストの追加・修正"
+    color: "c2e0c6" # 薄い緑色
+    patterns:
+      - "test:"
+      - "テスト"
+      - "テスト追加"
+      - "テスト修正"
+      - "🧪"
+
+  # ビルド・CI/CD
+  - name: "ci"
+    description: "CI/CD・ビルドの変更"
+    color: "e99695" # 薄い赤色
+    patterns:
+      - "ci:"
+      - "build:"
+      - "workflow:"
+      - "GitHub Actions"
+      - "CI/CD"
+      - "🔧"
+
+  # 依存関係
+  - name: "dependencies"
+    description: "依存関係の更新"
+    color: "0366d6" # 青色
+    patterns:
+      - "deps:"
+      - "dependencies:"
+      - "依存関係"
+      - "package.json"
+      - "npm"
+      - "📦"
+
+  # セキュリティ
+  - name: "security"
+    description: "セキュリティの改善"
+    color: "b60205" # 濃い赤色
+    patterns:
+      - "security:"
+      - "sec:"
+      - "セキュリティ"
+      - "脆弱性"
+      - "🔒"
+
+  # 破壊的変更
+  - name: "breaking"
+    description: "破壊的変更"
+    color: "000000" # 黒色
+    patterns:
+      - "BREAKING CHANGE:"
+      - "breaking:"
+      - "破壊的変更"
+      - "💥"
+
+# 除外するパターン
+exclude:
+  - "chore:"
+  - "chore:"
+  - "雑務"
+  - "その他"
+
+# 最小信頼度（0.0-1.0）
+min_confidence: 0.7
+
+# 最大タグ数
+max_tags: 5
