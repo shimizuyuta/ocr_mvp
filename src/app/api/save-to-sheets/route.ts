@@ -82,12 +82,23 @@ async function appendToSpreadsheet(
 
   const sheets = google.sheets({ version: "v4", auth });
 
-  // データを安全にエスケープする関数
-  const safeString = (value: any): string => {
+  // データを安全にエスケープする関数（制御文字はコードポイントで除去）
+  const safeString = (value: unknown): string => {
     if (value === null || value === undefined) return "";
     const str = String(value);
-    // 改行文字をスペースに置換し、その他の制御文字を除去
-    return str.replace(/[\r\n\t]/g, " ").replace(/[\x00-\x1F\x7F]/g, "");
+    let out = "";
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      // 改行/タブはスペースに、その他の制御文字(0x00-0x1F, 0x7F)はスキップ
+      if (code === 0x0a || code === 0x0d || code === 0x09) {
+        out += " ";
+      } else if ((code >= 0x00 && code <= 0x1f) || code === 0x7f) {
+        // skip control char
+      } else {
+        out += str[i];
+      }
+    }
+    return out;
   };
 
   const values = [

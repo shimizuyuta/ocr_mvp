@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 import {
-  type BusinessCardData,
   BusinessCardLLMSchema,
   type BusinessCardLLMOutput,
 } from "@/lib/schema";
