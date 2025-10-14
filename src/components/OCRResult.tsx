@@ -32,7 +32,6 @@ export default function OCRResult({ result }: OCRResultProps) {
       if (data.success) {
         setSaveMessage("✅ スプレッドシートに保存しました！");
         if (data.spreadsheetUrl) {
-          // 新しいタブでスプレッドシートを開く
           window.open(data.spreadsheetUrl, "_blank");
         }
       } else {
@@ -46,10 +45,75 @@ export default function OCRResult({ result }: OCRResultProps) {
     }
   };
 
-  const handleChange = (field: keyof BusinessCardData, value: string) => {
+  const handleBasicInfoChange = (
+    field: keyof typeof formData.basicInfo,
+    value: string | number,
+  ) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value || null,
+      basicInfo: {
+        ...prev.basicInfo,
+        [field]: value || null,
+      },
+    }));
+  };
+
+  const handleContactsChange = (field: string, value: string) => {
+    if (field.startsWith("socialMedia.")) {
+      const socialField = field.split(
+        ".",
+      )[1] as keyof typeof formData.contacts.socialMedia;
+      setFormData((prev) => ({
+        ...prev,
+        contacts: {
+          ...prev.contacts,
+          socialMedia: {
+            ...prev.contacts.socialMedia,
+            [socialField]: value || null,
+          },
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        contacts: {
+          ...prev.contacts,
+          [field]: value || null,
+        },
+      }));
+    }
+  };
+
+  const handleEventInfoChange = (
+    field: keyof typeof formData.eventInfo,
+    value: string,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      eventInfo: {
+        ...prev.eventInfo,
+        [field]: value || null,
+      },
+    }));
+  };
+
+  const handleBusinessInfoChange = (
+    field: string,
+    value: string | string[],
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      businessInfo: {
+        ...prev.businessInfo,
+        [field]: value || null,
+      },
+    }));
+  };
+
+  const handleNotesChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      notes: value || null,
     }));
   };
 
@@ -129,25 +193,27 @@ export default function OCRResult({ result }: OCRResultProps) {
       </div>
 
       <form className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-8">
           {/* 基本情報 */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
               基本情報
             </h4>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
-                  htmlFor="name"
+                  htmlFor="lastName"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  名前 <span className="text-red-500">*</span>
+                  姓 <span className="text-red-500">*</span>
                 </label>
                 <input
-                  id="name"
+                  id="lastName"
                   type="text"
-                  value={formData.name || ""}
-                  onChange={(e) => handleChange("name", e.target.value)}
+                  value={formData.basicInfo.lastName || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("lastName", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   required
                 />
@@ -155,34 +221,38 @@ export default function OCRResult({ result }: OCRResultProps) {
 
               <div>
                 <label
-                  htmlFor="name_kana"
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  名 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={formData.basicInfo.firstName || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("firstName", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="nameKana"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   名前（カナ）
                 </label>
                 <input
-                  id="name_kana"
+                  id="nameKana"
                   type="text"
-                  value={formData.name_kana || ""}
-                  onChange={(e) => handleChange("name_kana", e.target.value)}
+                  value={formData.basicInfo.nameKana || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("nameKana", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="company"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  会社 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="company"
-                  type="text"
-                  value={formData.company || ""}
-                  onChange={(e) => handleChange("company", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  required
                 />
               </div>
 
@@ -196,24 +266,82 @@ export default function OCRResult({ result }: OCRResultProps) {
                 <input
                   id="title"
                   type="text"
-                  value={formData.title || ""}
-                  onChange={(e) => handleChange("title", e.target.value)}
+                  value={formData.basicInfo.title || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("title", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div>
                 <label
-                  htmlFor="department"
+                  htmlFor="businessCategory"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  部署
+                  業界・業種
                 </label>
                 <input
-                  id="department"
+                  id="businessCategory"
                   type="text"
-                  value={formData.department || ""}
-                  onChange={(e) => handleChange("department", e.target.value)}
+                  value={formData.basicInfo.businessCategory || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("businessCategory", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  メールアドレス
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.basicInfo.email || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("email", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  固定電話番号
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  value={formData.basicInfo.phone || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("phone", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="mobile"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  携帯電話番号
+                </label>
+                <input
+                  id="mobile"
+                  type="tel"
+                  value={formData.basicInfo.mobile || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("mobile", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
@@ -225,103 +353,25 @@ export default function OCRResult({ result }: OCRResultProps) {
                 >
                   住所
                 </label>
-                <textarea
+                <input
                   id="address"
-                  value={formData.address || ""}
-                  onChange={(e) => handleChange("address", e.target.value)}
-                  rows={3}
+                  type="text"
+                  value={formData.basicInfo.address || ""}
+                  onChange={(e) =>
+                    handleBasicInfoChange("address", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
             </div>
           </div>
 
-          {/* 連絡先情報 */}
+          {/* 連絡先 */}
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
               連絡先
             </h4>
-            <div className="space-y-3">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  メールアドレス
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={formData.email || ""}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  電話番号
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone || ""}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="mobile"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  携帯電話
-                </label>
-                <input
-                  id="mobile"
-                  type="tel"
-                  value={formData.mobile || ""}
-                  onChange={(e) => handleChange("mobile", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="fax"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  FAX
-                </label>
-                <input
-                  id="fax"
-                  type="tel"
-                  value={formData.fax || ""}
-                  onChange={(e) => handleChange("fax", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="zip"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  郵便番号
-                </label>
-                <input
-                  id="zip"
-                  type="text"
-                  value={formData.zip || ""}
-                  onChange={(e) => handleChange("zip", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
                   htmlFor="website"
@@ -332,8 +382,10 @@ export default function OCRResult({ result }: OCRResultProps) {
                 <input
                   id="website"
                   type="url"
-                  value={formData.website || ""}
-                  onChange={(e) => handleChange("website", e.target.value)}
+                  value={formData.contacts.website || ""}
+                  onChange={(e) =>
+                    handleContactsChange("website", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
@@ -348,8 +400,10 @@ export default function OCRResult({ result }: OCRResultProps) {
                 <input
                   id="linkedin"
                   type="url"
-                  value={formData.linkedin || ""}
-                  onChange={(e) => handleChange("linkedin", e.target.value)}
+                  value={formData.contacts.socialMedia?.linkedin || ""}
+                  onChange={(e) =>
+                    handleContactsChange("socialMedia.linkedin", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
@@ -364,8 +418,10 @@ export default function OCRResult({ result }: OCRResultProps) {
                 <input
                   id="twitter"
                   type="text"
-                  value={formData.twitter || ""}
-                  onChange={(e) => handleChange("twitter", e.target.value)}
+                  value={formData.contacts.socialMedia?.twitter || ""}
+                  onChange={(e) =>
+                    handleContactsChange("socialMedia.twitter", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
@@ -380,51 +436,191 @@ export default function OCRResult({ result }: OCRResultProps) {
                 <input
                   id="instagram"
                   type="text"
-                  value={formData.instagram || ""}
-                  onChange={(e) => handleChange("instagram", e.target.value)}
+                  value={formData.contacts.socialMedia?.instagram || ""}
+                  onChange={(e) =>
+                    handleContactsChange(
+                      "socialMedia.instagram",
+                      e.target.value,
+                    )
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div>
                 <label
-                  htmlFor="qr_code_url"
+                  htmlFor="facebook"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  QRコードURL
+                  Facebook
                 </label>
                 <input
-                  id="qr_code_url"
-                  type="url"
-                  value={formData.qr_code_url || ""}
-                  onChange={(e) => handleChange("qr_code_url", e.target.value)}
+                  id="facebook"
+                  type="text"
+                  value={formData.contacts.socialMedia?.facebook || ""}
+                  onChange={(e) =>
+                    handleContactsChange("socialMedia.facebook", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* イベント情報 */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              イベント情報
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="eventDate"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  イベント開催日
+                </label>
+                <input
+                  id="eventDate"
+                  type="date"
+                  value={formData.eventInfo.eventDate || ""}
+                  onChange={(e) =>
+                    handleEventInfoChange("eventDate", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div>
                 <label
-                  htmlFor="notes"
+                  htmlFor="eventName"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  メモ
+                  イベント名
+                </label>
+                <input
+                  id="eventName"
+                  type="text"
+                  value={formData.eventInfo.eventName || ""}
+                  onChange={(e) =>
+                    handleEventInfoChange("eventName", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  開催地
+                </label>
+                <input
+                  id="location"
+                  type="text"
+                  value={formData.eventInfo.location || ""}
+                  onChange={(e) =>
+                    handleEventInfoChange("location", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ビジネス情報 */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              ビジネス情報
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="itStatus"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  IT導入状況
+                </label>
+                <input
+                  id="itStatus"
+                  type="text"
+                  value={formData.businessInfo.itAdoptionStatus || ""}
+                  onChange={(e) =>
+                    handleBusinessInfoChange("itAdoptionStatus", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="aiInterest"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  AI活用への関心度
+                </label>
+                <select
+                  id="aiInterest"
+                  value={formData.businessInfo.aiInterestLevel || ""}
+                  onChange={(e) =>
+                    handleBusinessInfoChange("aiInterestLevel", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                >
+                  <option value="">選択してください</option>
+                  <option value="高い">高い</option>
+                  <option value="中程度">中程度</option>
+                  <option value="低い">低い</option>
+                  <option value="なし">なし</option>
+                </select>
+              </div>
+
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="challenges"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  経営課題
                 </label>
                 <textarea
-                  id="notes"
-                  value={formData.notes || ""}
-                  onChange={(e) => handleChange("notes", e.target.value)}
+                  id="challenges"
+                  value={formData.businessInfo.challenges || ""}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      businessInfo: {
+                        ...prev.businessInfo,
+                        challenges: e.target.value || null,
+                      },
+                    }));
+                  }}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
             </div>
           </div>
+
+          {/* 備考 */}
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              備考
+            </h4>
+            <textarea
+              value={formData.notes || ""}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              placeholder="その他のメモを入力してください"
+            />
+          </div>
         </div>
 
         {/* 保存メッセージ */}
         {saveMessage && (
           <div
-            className={`mt-4 p-3 rounded-lg ${
+            className={`mt-6 p-3 rounded-lg ${
               saveMessage.includes("✅")
                 ? "bg-green-50 border border-green-200 text-green-800"
                 : "bg-red-50 border border-red-200 text-red-800"
