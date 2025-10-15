@@ -1,5 +1,8 @@
 import OpenAI from "openai";
-import { type BusinessCardData, BusinessCardSchema } from "@/lib/schema";
+import {
+  type BusinessCardLLMOutput,
+  BusinessCardLLMSchema,
+} from "@/lib/schema";
 
 export class LLMService {
   private openai: OpenAI;
@@ -20,31 +23,34 @@ QRコードURLが名刺上にある場合は "qr_code_url" に記入してくだ
 
 フォーマット:
 {
-  "name": "",
-  "name_kana": "",
-  "company": "",
-  "department": "",
-  "title": "",
-  "email": "",
-  "phone": "",
-  "mobile": "",
-  "fax": "",
-  "zip": "",
-  "address": "",
-  "website": "",
-  "linkedin": "",
-  "twitter": "",
-  "instagram": "",
-  "qr_code_url": "",
-  "notes": ""
+  "basicInfo": {
+    "lastName": "",
+    "firstName": "",
+    "nameKana": "",
+    "title": "",
+    "email": "",
+    "phone": "",
+    "businessCategory": "",
+    "address": ""
+  },
+  "contacts": {
+    "website": "",
+    "socialMedia": {
+      "linkedin": "",
+      "twitter": "",
+      "instagram": "",
+      "facebook": ""
+    }
+  }
 }
+
 
 テキスト:
 ${text}
     `;
   }
 
-  async parseBusinessCard(text: string): Promise<BusinessCardData> {
+  async parseBusinessCard(text: string): Promise<BusinessCardLLMOutput> {
     const prompt = this.createPrompt(text);
 
     const response = await this.openai.chat.completions.create({
@@ -57,7 +63,7 @@ ${text}
 
     try {
       const parsedJSON = JSON.parse(content);
-      const validated = BusinessCardSchema.safeParse(parsedJSON);
+      const validated = BusinessCardLLMSchema.safeParse(parsedJSON);
 
       if (!validated.success) {
         throw new Error(

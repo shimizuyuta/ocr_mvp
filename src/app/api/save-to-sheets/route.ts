@@ -82,34 +82,81 @@ async function appendToSpreadsheet(
 
   const sheets = google.sheets({ version: "v4", auth });
 
+  // データを安全にエスケープする関数（制御文字はコードポイントで除去）
+  const safeString = (value: unknown): string => {
+    if (value === null || value === undefined) return "";
+    const str = String(value);
+    let out = "";
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      // 改行/タブはスペースに、その他の制御文字(0x00-0x1F, 0x7F)はスキップ
+      if (code === 0x0a || code === 0x0d || code === 0x09) {
+        out += " ";
+      } else if ((code >= 0x00 && code <= 0x1f) || code === 0x7f) {
+        // skip control char
+      } else {
+        out += str[i];
+      }
+    }
+    return out;
+  };
+
   const values = [
     [
-      businessCard.name || "",
-      businessCard.name_kana || "",
-      businessCard.company || "",
-      businessCard.department || "",
-      businessCard.title || "",
-      businessCard.email || "",
-      businessCard.phone || "",
-      businessCard.mobile || "",
-      businessCard.fax || "",
-      businessCard.zip || "",
-      businessCard.address || "",
-      businessCard.website || "",
-      businessCard.linkedin || "",
-      businessCard.twitter || "",
-      businessCard.instagram || "",
-      businessCard.qr_code_url || "",
-      businessCard.notes || "",
+      // 基本情報
+      safeString(
+        `${businessCard.basicInfo.lastName} ${businessCard.basicInfo.firstName}`,
+      ),
+      safeString(businessCard.basicInfo.nameKana),
+      safeString(businessCard.basicInfo.title),
+      safeString(businessCard.basicInfo.email),
+      safeString(businessCard.basicInfo.phone),
+      safeString(businessCard.basicInfo.mobile),
+      safeString(businessCard.basicInfo.businessCategory),
+      safeString(businessCard.basicInfo.address),
+      // 連絡先
+      safeString(businessCard.contacts.website),
+      safeString(businessCard.contacts.socialMedia?.linkedin),
+      safeString(businessCard.contacts.socialMedia?.twitter),
+      safeString(businessCard.contacts.socialMedia?.instagram),
+      safeString(businessCard.contacts.socialMedia?.facebook),
+      // イベント情報
+      safeString(businessCard.eventInfo.eventDate),
+      safeString(businessCard.eventInfo.eventName),
+      safeString(businessCard.eventInfo.location),
+      // ビジネス情報
+      safeString(businessCard.businessInfo.challenges),
+      safeString(businessCard.businessInfo.itAdoptionStatus),
+      safeString(businessCard.businessInfo.aiInterestLevel),
+      // 備考
+      safeString(businessCard.notes),
     ],
   ];
 
-  await sheets.spreadsheets.values.append({
-    spreadsheetId,
-    range: "A:Q",
-    valueInputOption: "RAW",
-    requestBody: {
-      values,
-    },
-  });
+  try {
+    // まず既存のデータを取得して、次の行番号を決定
+    const existingData = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: "A:A", // A列のデータを取得
+    });
+
+    // 次の行番号を計算（既存データの行数 + 1）
+    const nextRow = (existingData.data.values?.length || 0) + 1;
+    const range = `A${nextRow}:AE${nextRow}`;
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range,
+      valueInputOption: "USER_ENTERED",
+      requestBody: {
+        values,
+      },
+    });
+  } catch (error) {
+    console.error("Google Sheets API Error:", error);
+    console.error("Data being sent:", JSON.stringify(values, null, 2));
+    throw new Error(
+      `Google Sheets API error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
 }

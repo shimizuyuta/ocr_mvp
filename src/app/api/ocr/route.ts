@@ -53,7 +53,18 @@ export async function POST(req: NextRequest) {
 
     // LLM で構造化
     const llmService = new LLMService();
-    const structuredData = await llmService.parseBusinessCard(extractedText);
+    const llmData = await llmService.parseBusinessCard(extractedText);
+    // 欠損フィールドを既定値で正規化
+    const structuredData = {
+      ...llmData,
+      eventInfo: { eventDate: null, eventName: null, location: null },
+      businessInfo: {
+        challenges: null,
+        itAdoptionStatus: null,
+        aiInterestLevel: null,
+      },
+      notes: null,
+    };
 
     return NextResponse.json<OCRResponse>({
       text: extractedText,
