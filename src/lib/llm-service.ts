@@ -1,8 +1,5 @@
 import OpenAI from "openai";
-import {
-  BusinessCardLLMSchema,
-  type BusinessCardLLMOutput,
-} from "@/lib/schema";
+import { type BusinessCardLLMOutput, BusinessCardLLMSchema } from "@/lib/schema";
 
 export class LLMService {
   private openai: OpenAI;
